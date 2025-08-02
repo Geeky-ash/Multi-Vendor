@@ -1,8 +1,8 @@
 'use client';
 
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { LayoutDashboard, LogIn, LogOut, PenSquare, UserPlus, Store } from 'lucide-react';
+import { LayoutDashboard, LogIn, LogOut, UserPlus, Store } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session, status } = useSession();

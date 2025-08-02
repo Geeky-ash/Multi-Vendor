@@ -96,7 +96,7 @@ export default function VendorDashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-gray-600">You haven't added any products yet.</div>
+            <div className="text-gray-600">You haven&apos;t added any products yet.</div>
           )}
         </div>
         <form onSubmit={handleAddProduct} className="bg-gray-50 p-4 rounded space-y-3">
