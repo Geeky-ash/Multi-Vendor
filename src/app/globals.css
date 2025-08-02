@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  /* Updated to a light gray background and a softer black for text */
+  --background: #f9fafb; /* This is Tailwind's gray-50 */
+  --foreground: #1f2937; /* This is Tailwind's gray-800 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Updated dark mode colors for better contrast */
+    --background: #111827; /* This is Tailwind's gray-900 */
+    --foreground: #f3f4f6; /* This is Tailwind's gray-100 */
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* The font-family is handled by your layout.tsx, so it's not needed here */
+}
