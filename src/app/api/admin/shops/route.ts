@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Shop from "@/models/Shop";
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     try {
         const shops = await Shop.find({}).populate('owner', 'name email'); // Populate owner info
         return NextResponse.json(shops);
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }
