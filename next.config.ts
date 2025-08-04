@@ -1,10 +1,21 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // other config options here
-
+  // Your existing ESLint configuration
   eslint: {
-    ignoreDuringBuilds: true, // <-- This disables ESLint checking during builds
+    ignoreDuringBuilds: true,
+  },
+  
+  // ⚙️ ADD THIS PART
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com', // <-- ⚠️ REPLACE THIS
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

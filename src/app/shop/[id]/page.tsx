@@ -1,39 +1,43 @@
+import { cache } from 'react';
 import dbConnect from '@/lib/mongodb';
 import Shop, { IShop } from '@/models/Shop';
 import Product, { IProduct } from '@/models/Product';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Image as ImageIcon } from 'lucide-react';
 
 interface ShopProfileProps {
     params: { id: string };
 }
 
-// This function fetches data directly on the server for fast performance
-async function getShopData(id: string): Promise<{ shop: IShop | null; products: IProduct[] }> {
-  await dbConnect();
-  const shop = await Shop.findOne({ _id: id, status: 'approved' });
+export const getShopData = cache(async (id: string): Promise<{ shop: IShop | null; products: IProduct[] }> => {
+  try {
+    await dbConnect();
+    const shopDoc = await Shop.findOne({ _id: id, status: 'approved' });
 
-  if (!shop) {
+    if (!shopDoc) {
+      return { shop: null, products: [] };
+    }
+
+    const productsDocs = await Product.find({ shop: shopDoc._id });
+    
+    return { 
+      shop: JSON.parse(JSON.stringify(shopDoc)), 
+      products: JSON.parse(JSON.stringify(productsDocs)) 
+    };
+
+  } catch (error) {
+    console.error("Database Error:", error);
     return { shop: null, products: [] };
   }
+});
 
-  const products = await Product.find({ shop: shop._id });
-
-  // We need to convert MongoDB documents to plain objects for Next.js to use
-  return {
-    shop: JSON.parse(JSON.stringify(shop)),
-    products: JSON.parse(JSON.stringify(products)),
-  };
-}
-
-// This function generates a dynamic title for the browser tab
 export async function generateMetadata({ params }: ShopProfileProps): Promise<Metadata> {
     const { shop } = await getShopData(params.id);
     return {
         title: shop ? `${shop.name} | Drappi` : 'Shop Not Found',
     };
 }
-
 
 export default async function ShopProfilePage({ params }: ShopProfileProps) {
     const { shop, products } = await getShopData(params.id);
@@ -42,6 +46,7 @@ export default async function ShopProfilePage({ params }: ShopProfileProps) {
         return (
             <div className="text-center py-20">
                 <h1 className="text-3xl font-bold">Shop Not Found</h1>
+                <p className="text-gray-500 mt-2">The shop you're looking for doesn't exist or is not available.</p>
             </div>
         );
     }
@@ -55,14 +60,25 @@ export default async function ShopProfilePage({ params }: ShopProfileProps) {
             </div>
           </header>
 
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Products</h2>
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map(product => (
-                  <div key={String(product._id)} className="bg-white border rounded-lg shadow-sm flex flex-col">
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                      <ImageIcon className="h-12 w-12 text-gray-400" />
+                  <div key={String(product._id)} className="group bg-white border rounded-lg shadow-sm overflow-hidden flex flex-col">
+                    <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center">
+                      {/* --- FIX: Changed product.imageUrl to product.image --- */}
+                      {product.image ? (
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <ImageIcon className="h-12 w-12 text-gray-400" />
+                      )}
                     </div>
                     <div className="p-4 flex flex-col flex-grow">
                       <h3 className="font-semibold text-gray-800">{product.name}</h3>
@@ -76,7 +92,7 @@ export default async function ShopProfilePage({ params }: ShopProfileProps) {
                 <p className="text-gray-500">This shop has not added any products yet.</p>
               </div>
             )}
-          </div>
+          </main>
         </div>
     );
 }
