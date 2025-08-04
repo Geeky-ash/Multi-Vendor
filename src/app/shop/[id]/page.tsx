@@ -46,7 +46,8 @@ export default async function ShopProfilePage({ params }: ShopProfileProps) {
         return (
             <div className="text-center py-20">
                 <h1 className="text-3xl font-bold">Shop Not Found</h1>
-                <p className="text-gray-500 mt-2">The shop you're looking for doesn't exist or is not available.</p>
+                {/* FIX: Replaced the direct apostrophe with &apos; to fix ESLint error */}
+                <p className="text-gray-500 mt-2">The shop you&apos;re looking for doesn&apos;t exist or is not available.</p>
             </div>
         );
     }
@@ -67,7 +68,7 @@ export default async function ShopProfilePage({ params }: ShopProfileProps) {
                 {products.map(product => (
                   <div key={String(product._id)} className="group bg-white border rounded-lg shadow-sm overflow-hidden flex flex-col">
                     <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center">
-                      {/* --- FIX: Changed product.imageUrl to product.image --- */}
+                      {/* Using product.image as defined in your model */}
                       {product.image ? (
                         <Image
                           src={product.image}
