@@ -53,7 +53,7 @@ export default function Navbar() {
               Sign Up
             </Link>
             <Link
-              href="/register/vendor"
+              href="/register-vendor"
               className="flex items-center gap-1 px-3 py-2 rounded border border-gray-300 text-gray-900 hover:bg-gray-100 transition"
             >
               <Store className="w-4 h-4" />
