@@ -4,15 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Shop from "@/models/Shop";
 
-// Define a specific type for the route's context parameter for clarity.
-type PutRouteContext = {
-    params: {
-        id: string; // The shop ID from the dynamic URL segment.
-    }
-}
-
-// This function handles PUT requests to update a shop's status.
-export async function PUT(request: NextRequest, context: PutRouteContext) {
+// This is the most direct and standard signature for a dynamic route handler.
+// We are destructuring `params` directly from the second argument.
+export async function PUT(
+    request: NextRequest, 
+    { params }: { params: { id: string } }
+) {
     const session = await getServerSession(authOptions);
 
     // Ensure the user is an authenticated admin.
@@ -20,10 +17,9 @@ export async function PUT(request: NextRequest, context: PutRouteContext) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Extract the shop ID from the context parameter.
-    const { id } = context.params;
-    const body = await request.json();
-    const { status } = body;
+    // Extract the shop ID from the destructured params.
+    const { id } = params;
+    const { status } = await request.json();
 
     // Validate the incoming status value.
     if (!status || !['approved', 'blocked'].includes(status)) {
